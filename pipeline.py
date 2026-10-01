@@ -15,3 +15,5 @@ grezzo = estrai()
 pulito = pulisci(grezzo)
 print(pulito["OW_ID"].nunique())
 print((pulito["WL_MBGL"].groupby(pulito.index.year).agg(["mean", "count"]).to_string()))
+
+

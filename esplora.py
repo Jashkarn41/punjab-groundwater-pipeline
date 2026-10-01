@@ -23,4 +23,4 @@ print(df_buoni["OW_ID"].nunique())
 df_finestra = df_buoni[(df_buoni.index.year >= 1974) & (df_buoni.index.year <= 2015)]
 print(df_finestra["WL_MBGL"].groupby(df_finestra.index.year).agg(["mean", "count"]).to_string())
 
-print(df_finestra["OW_ID"].nunique())
+print(df_finestra["OW_ID"].nunique()) # Il file pipepline.py dava come risultato 322 rispetto a 326 cosi ho fatto un controllo e ho trovato 4 pozzi che avevano misure solo fuori dalla finestra temporale 1974-2015. Quindi il risultato di 322 è corretto.
