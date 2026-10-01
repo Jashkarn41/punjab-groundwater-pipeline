@@ -22,3 +22,5 @@ print(df_buoni["OW_ID"].nunique())
 
 df_finestra = df_buoni[(df_buoni.index.year >= 1974) & (df_buoni.index.year <= 2015)]
 print(df_finestra["WL_MBGL"].groupby(df_finestra.index.year).agg(["mean", "count"]).to_string())
+
+print(df_finestra["OW_ID"].nunique())
