@@ -34,11 +34,36 @@ def prepara_pozzi(df):
 def carica_pozzi(pozzi, engine):
     pozzi.to_sql("pozzi", if_exists="append", index=False, con=engine)
 
+def prepara_misure(df):
+    
+    misure = df.reset_index()
+    misure = misure[["OW_ID", "WL_MBGL", "DATE"]]
+    misure = misure.rename(columns={"OW_ID": "ow_id", "WL_MBGL": "wl_mbgl", "DATE": "numero_data"})
+    
+    return misure
+
+def carica_misure(misure, engine):
+    misure.to_sql("misure", if_exists="append", index=False, con=engine)
+
+
+
+
+
+
+
+
+
+
+
+
+
 grezzo = estrai()
 pulito = pulisci(grezzo)
 # pulito["OW_ID"].nunique()
 # pulito["WL_MBGL"].groupby(pulito.index.year).agg(["mean", "count"]).to_string()
 pozzi_puliti = prepara_pozzi(pulito)
 #carica_pozzi(pozzi_puliti, connetti())
-
+misure_pulite = prepara_misure(pulito)
+#carica_misure(misure_pulite, connetti())
 print(pozzi_puliti)
+print(misure_pulite)
