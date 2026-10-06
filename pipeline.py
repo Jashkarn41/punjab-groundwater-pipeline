@@ -39,6 +39,6 @@ pulito = pulisci(grezzo)
 # pulito["OW_ID"].nunique()
 # pulito["WL_MBGL"].groupby(pulito.index.year).agg(["mean", "count"]).to_string()
 pozzi_puliti = prepara_pozzi(pulito)
-carica_pozzi(pozzi_puliti, connetti())
+#carica_pozzi(pozzi_puliti, connetti())
 
 print(pozzi_puliti)
