@@ -1,4 +1,7 @@
 from aqua_fetch import gw_punjab
+import os
+from dotenv import load_dotenv
+from sqlalchemy import create_engine
 
 def estrai():
     return gw_punjab(data_type = "full", country = "IND")
@@ -11,9 +14,31 @@ def pulisci(df):
     df_finestra = df_buoni[(df_buoni.index.year >= 1974) & (df_buoni.index.year <= 2015)]
     return df_finestra
 
+def connetti():
+    
+    load_dotenv()
+    url=(f"mysql+pymysql://{os.getenv('db_user')}:{os.getenv('db_password')}"
+     f"@{os.getenv('db_host')}:{os.getenv('db_port')}/{os.getenv('db_name')}")
+    engine = create_engine(url)
+
+    return engine
+
+def prepara_pozzi(df):
+    
+    pozzi = df[["OW_ID", "LOCATION", "LAT", "LONG"]]
+    pozzi = pozzi.drop_duplicates(subset=["OW_ID"])
+    pozzi = pozzi.rename(columns={"OW_ID": "ow_id", "LOCATION":"location", "LAT":"lat", "LONG":"longi"})
+    
+    return pozzi
+
+def carica_pozzi(pozzi, engine):
+    pozzi.to_sql("pozzi", if_exists="append", index=False, con=engine)
+
 grezzo = estrai()
 pulito = pulisci(grezzo)
-print(pulito["OW_ID"].nunique())
-print((pulito["WL_MBGL"].groupby(pulito.index.year).agg(["mean", "count"]).to_string()))
+# pulito["OW_ID"].nunique()
+# pulito["WL_MBGL"].groupby(pulito.index.year).agg(["mean", "count"]).to_string()
+pozzi_puliti = prepara_pozzi(pulito)
+carica_pozzi(pozzi_puliti, connetti())
 
-
+print(pozzi_puliti)
