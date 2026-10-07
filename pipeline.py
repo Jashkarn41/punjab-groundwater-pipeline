@@ -45,18 +45,6 @@ def prepara_misure(df):
 def carica_misure(misure, engine):
     misure.to_sql("misure", if_exists="append", index=False, con=engine)
 
-
-
-
-
-
-
-
-
-
-
-
-
 grezzo = estrai()
 pulito = pulisci(grezzo)
 # pulito["OW_ID"].nunique()
