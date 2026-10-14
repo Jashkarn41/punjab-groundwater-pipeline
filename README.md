@@ -51,3 +51,25 @@ From 1974 to 1998 the average depth went from 12.4 m to 7.4 m, so the water tabl
 ## Next
 
 I want to schedule the pipeline with Airflow and build a Power BI dashboard on the database. I also need to make the loading step safe to run twice, because right now running it again duplicates the rows.
+
+## Campi del dataset
+
+Ogni riga è la misura di un pozzo in un anno.
+
+| Campo | Cosa contiene |
+|---|---|
+| OW_ID | codice del pozzo (per esempio IND1004) |
+| LOCATION | nome del luogo dove si trova il pozzo |
+| LAT, LONG | coordinate del pozzo |
+| DATE | data della misura, sempre il 1° ottobre |
+| WL_MBGL | profondità dell'acqua in metri sotto il suolo: più è alto, più la falda è profonda |
+
+Molte righe non hanno la misura e le scarto.
+
+## Database
+
+Due tabelle, `pozzi` (una riga per pozzo) e `misure` (una riga per misura), collegate dal codice del pozzo.
+
+## Dashboard
+
+![Dashboard Power BI](dashboard.png)
