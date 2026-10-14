@@ -20,9 +20,6 @@ CREATE TABLE misure (
 
 describe misure;
 
-create user 'falde_user'@'localhost' identified by 'root';
-grant all privileges on falde.* to 'falde_user'@'localhost';
-
 select count(*) from pozzi;
 describe falde.misure; -- controllo l'errore in quanto il count mi risulta 0
 
@@ -33,5 +30,17 @@ select year(numero_data) as year ,count(*) as misure, avg(wl_mbgl) as average
 from falde.misure 
 group by year(numero_data)
 order by year(numero_data);
+
+set sql_safe_updates = 0;
+delete from falde.misure;
+delete from falde.pozzi;
+set sql_safe_updates = 1; -- Seguo il consiglio di un amico Data Engineer e sistemo il problema dell'idempotenza del mio database
+
+select count(*) from falde.misure;
+
+select count(*) from falde.misure;
+select count(*) from falde.pozzi; 
+
+-- Ho eseguito piu volte il select count(*) e noto di aver sistemato il problema dell'idempotenza
 
 */

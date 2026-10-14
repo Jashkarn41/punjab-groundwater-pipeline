@@ -1,7 +1,7 @@
 from aqua_fetch import gw_punjab
 import os
 from dotenv import load_dotenv
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 
 def estrai():
     return gw_punjab(data_type = "full", country = "IND")
@@ -45,13 +45,28 @@ def prepara_misure(df):
 def carica_misure(misure, engine):
     misure.to_sql("misure", if_exists="append", index=False, con=engine)
 
-grezzo = estrai()
-pulito = pulisci(grezzo)
-# pulito["OW_ID"].nunique()
-# pulito["WL_MBGL"].groupby(pulito.index.year).agg(["mean", "count"]).to_string()
-pozzi_puliti = prepara_pozzi(pulito)
-#carica_pozzi(pozzi_puliti, connetti())
-misure_pulite = prepara_misure(pulito)
-#carica_misure(misure_pulite, connetti())
-#print(pozzi_puliti)
-#print(misure_pulite)
+def carica_tutto(pozzi, misure, engine):
+    
+    with engine.begin() as conn:
+        
+        conn.execute(text("delete from falde.misure"))
+        conn.execute(text("delete from falde.pozzi"))
+       
+        pozzi.to_sql("pozzi", if_exists="append", index=False, con=conn)
+        misure.to_sql("misure", if_exists="append", index=False, con=conn)
+
+if __name__ == "__main__":
+
+    grezzo = estrai()
+    pulito = pulisci(grezzo)
+    # pulito["OW_ID"].nunique()
+    # pulito["WL_MBGL"].groupby(pulito.index.year).agg(["mean", "count"]).to_string()
+    pozzi_puliti = prepara_pozzi(pulito)
+    #carica_pozzi(pozzi_puliti, connetti())
+    misure_pulite = prepara_misure(pulito)
+    #carica_misure(misure_pulite, connetti())
+    #print(pozzi_puliti)
+    #print(misure_pulite)
+
+    carica_tutto(pozzi_puliti, misure_pulite, connetti())
+
