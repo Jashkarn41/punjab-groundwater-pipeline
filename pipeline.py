@@ -75,6 +75,12 @@ def applica_regole(df):
     df.loc[df["reason"].isna() & ((df["DATE"].dt.year < 1974) | (df["DATE"].dt.year > 2015)), "reason"] = "fuori_periodo"
     return df
 
+def prepara_scarti(scarti):
+    rename_scarti = scarti[["OW_ID", "DATE", "WL_MBGL", "reason"]]
+    rename_scarti = rename_scarti.rename(columns={"OW_ID":"ow_id", "DATE":"numero_data", "WL_MBGL":"wl_mbgl"})
+    return rename_scarti
+    
+
 if __name__ == "__main__":
 
     grezzo = estrai()
@@ -83,6 +89,8 @@ if __name__ == "__main__":
     print(risultato["reason"].value_counts())
     valide = risultato[risultato["reason"].isna()]
     scarti = risultato[risultato["reason"].notna()]
+    print(prepara_scarti(scarti).head())
+    print(len(prepara_scarti(scarti)))
     assert len(valide) + len(scarti) == len(grezzo)
     print(len(valide), len(scarti))
     # pulito["OW_ID"].nunique()
