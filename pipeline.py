@@ -81,6 +81,10 @@ if __name__ == "__main__":
     pulito = pulisci(grezzo)
     risultato = applica_regole(grezzo)
     print(risultato["reason"].value_counts())
+    valide = risultato[risultato["reason"].isna()]
+    scarti = risultato[risultato["reason"].notna()]
+    assert len(valide) + len(scarti) == len(grezzo)
+    print(len(valide), len(scarti))
     # pulito["OW_ID"].nunique()
     # pulito["WL_MBGL"].groupby(pulito.index.year).agg(["mean", "count"]).to_string()
     pozzi_puliti = prepara_pozzi(pulito)
