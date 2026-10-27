@@ -55,10 +55,32 @@ def carica_tutto(pozzi, misure, engine):
         pozzi.to_sql("pozzi", if_exists="append", index=False, con=conn)
         misure.to_sql("misure", if_exists="append", index=False, con=conn)
 
+def applica_regole(df):
+    df = df.reset_index()
+    df = df.sort_values(["OW_ID", "DATE"])
+    
+    df["previous"] = df.groupby("OW_ID")["WL_MBGL"].shift(1)
+    df["next"] = df.groupby("OW_ID")["WL_MBGL"].shift(-1)
+    df["salto_prev"] = df["WL_MBGL"] - df["previous"]
+    df["salto_next"] = df["WL_MBGL"] - df["next"]
+    
+    df["reason"] = None
+    df.loc[df["reason"].isna() & df["WL_MBGL"].isna(), "reason"] = "misura_mancante"
+    df.loc[df["reason"].isna() & ((df["salto_prev"] > 15) & (df["salto_next"] > 15) | (df["salto_prev"] < -15) & (df["salto_next"] < -15)), "reason"] = "picco_isolato"
+
+    df["valida"] = df["reason"].isna()
+    df["validi_pozzo"] = df.groupby("OW_ID")["valida"].transform("sum")
+    df.loc[df["reason"].isna() & (df["validi_pozzo"] < 30), "reason"] = "poche_misure"
+
+    df.loc[df["reason"].isna() & ((df["DATE"].dt.year < 1974) | (df["DATE"].dt.year > 2015)), "reason"] = "fuori_periodo"
+    return df
+
 if __name__ == "__main__":
 
     grezzo = estrai()
     pulito = pulisci(grezzo)
+    risultato = applica_regole(grezzo)
+    print(risultato["reason"].value_counts())
     # pulito["OW_ID"].nunique()
     # pulito["WL_MBGL"].groupby(pulito.index.year).agg(["mean", "count"]).to_string()
     pozzi_puliti = prepara_pozzi(pulito)
@@ -68,5 +90,5 @@ if __name__ == "__main__":
     #print(pozzi_puliti)
     #print(misure_pulite)
 
-    carica_tutto(pozzi_puliti, misure_pulite, connetti())
+    #carica_tutto(pozzi_puliti, misure_pulite, connetti())
 
