@@ -51,8 +51,8 @@ create table scarti(
     numero_data date not null,
     wl_mbgl decimal(6,2) null,
     reason varchar(40) not null,
-    start_year year not null,
-    end_year year not null,
+    start_year smallint not null,
+    end_year smallint not null,
     loaded datetime default current_timestamp not null
 );
 

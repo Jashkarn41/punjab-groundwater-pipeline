@@ -45,15 +45,17 @@ def prepara_misure(df):
 def carica_misure(misure, engine):
     misure.to_sql("misure", if_exists="append", index=False, con=engine)
 
-def carica_tutto(pozzi, misure, engine):
+def carica_tutto(pozzi, misure, scarti, engine):
     
     with engine.begin() as conn:
         
         conn.execute(text("delete from falde.misure"))
         conn.execute(text("delete from falde.pozzi"))
+        conn.execute(text("delete from falde.scarti"))
        
         pozzi.to_sql("pozzi", if_exists="append", index=False, con=conn)
         misure.to_sql("misure", if_exists="append", index=False, con=conn)
+        scarti.to_sql("scarti", if_exists="append", index=False, con=conn)
 
 def applica_regole(df):
     df = df.reset_index()
@@ -78,29 +80,34 @@ def applica_regole(df):
 def prepara_scarti(scarti):
     rename_scarti = scarti[["OW_ID", "DATE", "WL_MBGL", "reason"]]
     rename_scarti = rename_scarti.rename(columns={"OW_ID":"ow_id", "DATE":"numero_data", "WL_MBGL":"wl_mbgl"})
+    rename_scarti["start_year"] = rename_scarti["numero_data"].dt.year // 5*5
+    rename_scarti["end_year"] = rename_scarti["start_year"] + 4
     return rename_scarti
     
 
 if __name__ == "__main__":
 
     grezzo = estrai()
-    pulito = pulisci(grezzo)
+    #pulito = pulisci(grezzo)
     risultato = applica_regole(grezzo)
-    print(risultato["reason"].value_counts())
+    #print(risultato["reason"].value_counts())
     valide = risultato[risultato["reason"].isna()]
     scarti = risultato[risultato["reason"].notna()]
-    print(prepara_scarti(scarti).head())
-    print(len(prepara_scarti(scarti)))
+    #print(prepara_scarti(scarti).head())
+    #print(len(prepara_scarti(scarti)))
     assert len(valide) + len(scarti) == len(grezzo)
-    print(len(valide), len(scarti))
+    #print(len(valide), len(scarti))
     # pulito["OW_ID"].nunique()
     # pulito["WL_MBGL"].groupby(pulito.index.year).agg(["mean", "count"]).to_string()
-    pozzi_puliti = prepara_pozzi(pulito)
+    #pozzi_puliti = prepara_pozzi(pulito)
     #carica_pozzi(pozzi_puliti, connetti())
-    misure_pulite = prepara_misure(pulito)
+    #misure_pulite = prepara_misure(pulito)
+    #print(prepara_scarti(scarti).head())
+    #print(prepara_scarti(scarti)[["start_year", "end_year"]].drop_duplicates().head(10))
+    #print(prepara_scarti(scarti)["start_year"].min())
     #carica_misure(misure_pulite, connetti())
     #print(pozzi_puliti)
     #print(misure_pulite)
 
-    #carica_tutto(pozzi_puliti, misure_pulite, connetti())
+    carica_tutto(prepara_pozzi(valide), prepara_misure(valide), prepara_scarti(scarti), connetti())
 
