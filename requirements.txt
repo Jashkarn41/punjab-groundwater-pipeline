@@ -1,0 +1,7 @@
+aqua-fetch
+pandas
+openpyxl
+sqlalchemy
+pymysql
+python-dotenv
+matplotlib
