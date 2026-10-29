@@ -9,6 +9,10 @@ The data are groundwater measurements from wells in northwest India. The water t
 The dashboard reads the MySQL database. The Year cursor filters the valid measurements. The two charts on the rejected rows (right side) show the whole dataset and are not filtered by the cursor, because they include the years outside 1974-2015.
  
 ![Average depth of the water table and number of measurements per year](grafico.png)
+
+##  How it evolved
+
+The first version silently dropped rows without a measurement, wells with fewer than 30 measurements and years outside 1974-2015, so I could not say how many rows were lost or why. After feedback from two data engineers I replaced that step with explicit rules that label every row, a table of rejected rows and a check that the counts add up. The old version is in the Git history.
  
 ## What it does
  
