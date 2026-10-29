@@ -88,26 +88,10 @@ def prepara_scarti(scarti):
 if __name__ == "__main__":
 
     grezzo = estrai()
-    #pulito = pulisci(grezzo)
     risultato = applica_regole(grezzo)
-    #print(risultato["reason"].value_counts())
     valide = risultato[risultato["reason"].isna()]
     scarti = risultato[risultato["reason"].notna()]
-    #print(prepara_scarti(scarti).head())
-    #print(len(prepara_scarti(scarti)))
     assert len(valide) + len(scarti) == len(grezzo)
-    #print(len(valide), len(scarti))
-    # pulito["OW_ID"].nunique()
-    # pulito["WL_MBGL"].groupby(pulito.index.year).agg(["mean", "count"]).to_string()
-    #pozzi_puliti = prepara_pozzi(pulito)
-    #carica_pozzi(pozzi_puliti, connetti())
-    #misure_pulite = prepara_misure(pulito)
-    #print(prepara_scarti(scarti).head())
-    #print(prepara_scarti(scarti)[["start_year", "end_year"]].drop_duplicates().head(10))
-    #print(prepara_scarti(scarti)["start_year"].min())
-    #carica_misure(misure_pulite, connetti())
-    #print(pozzi_puliti)
-    #print(misure_pulite)
 
     carica_tutto(prepara_pozzi(valide), prepara_misure(valide), prepara_scarti(scarti), connetti())
 
